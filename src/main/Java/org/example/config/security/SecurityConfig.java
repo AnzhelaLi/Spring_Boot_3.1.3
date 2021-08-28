@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private SuccessUserHandler successUserHandler;// класс, в котором описана логика перенаправления пользователей по ролям
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public SecurityConfig(@Qualifier("userServiceImpl") UserDetailsService userDetailsService,
+    public SecurityConfig(@Lazy@Qualifier("userServiceImpl") UserDetailsService userDetailsService,
                           SuccessUserHandler successUserHandler) {
         this.userDetailsService = userDetailsService;
         this.successUserHandler = successUserHandler;
@@ -66,8 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-   // @Bean
-    //public PasswordEncoder passwordEncoder() {
-        //return new BCryptPasswordEncoder();
-  //  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

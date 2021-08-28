@@ -11,7 +11,7 @@ create table roles (role_id bigint not null auto_increment,
                     role varchar(30) not null,
                     primary key(role_id), unique(role));
 
-create table user_role (user_id BIGINT not null, role_id BIGINT not null,
+create table users_roles (user_id BIGINT not null, role_id BIGINT not null,
                         primary key(user_id, role_id),
 
                         constraint FK_users foreign key (user_id) references users (user_id),

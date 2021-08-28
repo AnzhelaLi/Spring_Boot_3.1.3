@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJL     Im9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+
+
+    <title>Admin panel</title>
+</head>
+<body>
+
+<div class="row">
+    <div class="col-12">
+        <div class="p-3 mb-2 bg-dark text-white">
+            .bg-dark
+            <div style='float: right; color: darkgray '><a th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex align-items-start">
+    <div class="nav flex-column nav-pills me-3 col-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <button class="nav-link active text-start" id="v-pills-home-tab" data-bs-toggle="pill"
+                data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home"
+                aria-selected="true">Admin
+        </button>
+        <button class="nav-link text-start" id="v-pills-profile-tab" data-bs-toggle="pill"
+                data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile"
+                aria-selected="false">User
+        </button>
+    </div>
+    <div style="width: 100%;" class="tab-content" id="v-pills-tabContent">
+        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+            <div class="container-fluid  bg-light text-dark min-vh-100">
+                <h1>Admin panel</h1>
+
+
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="UsersTable-tab" data-bs-toggle="tab"
+                                data-bs-target="#UsersTable" type="button" role="tab" aria-controls="UsersTable"
+                                aria-selected="true">Users table
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="NewUser-tab" data-bs-toggle="tab" data-bs-target="#NewUser"
+                                type="button" role="tab" aria-controls="NewUser" aria-selected="false">New User
+                        </button>
+                    </li>
+                </ul>
+
+
+                <form class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" data-toggle="tab" id="UsersTable" role="tabpanel" aria-labelledby="UsersTable-tab">
+                        <div class="container" style="border-right: 1px solid lightgrey; border-left: 1px solid lightgrey;">
+                            <div class="row">
+                                <h5>All users</h5></div></div>
+                        <div class="container" style="border: 1px solid lightgrey;"><br/>
+                            <table class="table table-striped" style="border-top: 1px solid lightgrey">
+                                <thead>
+                                <tr>
+                                    <th style="border-color: lightgray;" scope="col">Id</th>
+                                    <th style="border-color: lightgray;" scope="col">First Name</th>
+                                    <th style="border-color: lightgray;" scope="col">Last Name</th>
+                                    <th style="border-color: lightgray;" scope="col">Workplace</th>
+                                    <th style="border-color: lightgray;" scope="col">Age</th>
+                                    <th style="border-color: lightgray;" scope="col">Salary</th>
+                                    <th style="border-color: lightgray;" scope="col">Username</th>
+                                    <th style="border-color: lightgray;" scope="col">Role</th>
+                                    <th style="border-color: lightgray;" scope="col">Edit</th>
+                                    <th style="border-color: lightgray;" scope="col">Delete</th>
+                                </tr>
+                                </thead>
+                                <tr th:each="user, state : ${users}">
+                                    <td th:utext="${user.id}">Id</td>
+                                    <td th:utext="${user.name}">First_name</td>
+                                    <td th:utext="${user.surname}">Last_name</td>
+                                    <td th:utext="${user.workplace}">Workplace</td>
+                                    <td th:utext="${user.age}">Age</td>
+                                    <td th:utext="${user.salary}">Salary</td>
+                                    <td th:utext="${user.username}">Username</td>
+                                    <td>
+                                        <p th:each="role : ${user.roles}">
+                                            <span th:text="${role.role.toString().replaceFirst('ROLE_', '').replaceAll(',', '')}">Roles</span>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm">Edit</button>
+                                    </td>
+
+                                    <td>
+                                        <form action="#" th:action="@{/admin/{id}(id=${user.getId()})}" th:method="delete">
+                                        <button type="submit"  class="btn btn-danger btn-sm">Delete</button></form>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <form action="#" th:action="@{/admin/addNew}" th:object="${newUser}"  th:method="POST">
+                    <div class="tab-pane fade active" data-toggle="tab" id="NewUser" role="tabpanel" aria-labelledby="NewUser-tab">
+
+                        <div class="container" style="border-right: 1px solid lightgrey; border-left: 1px solid lightgrey;">
+                            <div class="row"><h5>Add new user</h5></div></div>
+                        <div class="container"  style="border: 1px solid lightgrey;">
+                            <div class="row justify-content-center">
+                                <div class="col-4">
+
+
+
+                                        <div style="text-align: center;">
+                                                <label for="name" class="form-label mb-3">First Name</label>
+                                                <input type="text" th:field="*{name}"  class="form-control" id="name" name="name" value="">
+                                            <div class="mb-3">
+                                                <label for="surname" class="form-label">Last Name</label>
+                                                <input type="text" th:field="*{surname}" class="form-control" id="surname" name="surname" value="">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="workplace" class="form-label">Workplace</label>
+                                                <input type="text" th:field="*{workplace}" class="form-control" id="workplace" name="workplace" value="">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="age" class="form-label">Age</label>
+                                                <input type="number" th:field="*{age}" class="form-control" id="age" name="age" value="">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="salary" class="form-label">Salary</label>
+                                                <input type="number" th:field="*{salary}" class="form-control" id="salary" name="salary" value="">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="username" class="form-label">Username</label>
+                                                <input type="text" th:field="*{username}" class="form-control" id="username" name="surname" value="">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="Password" class="form-label">Password</label>
+                                                <input type="password" th:field="*{password}" class="form-control" id="Password" name="password" value="">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Role </label>
+                                                <select class="form-select" size="2" aria-label="size 2 select example">
+                                                    <option value="ROLE_Admin" name="createRoles">ADMIN</option>
+                                                    <option value="ROLE_User" name="createRoles">USER</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary" value="save">Submit</button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    </form>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+<!-- Option 2: Separate Popper and Bootstrap JS -->
+<!--
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+-->
+</body>
+</html>

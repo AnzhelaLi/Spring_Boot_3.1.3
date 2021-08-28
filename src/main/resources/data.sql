@@ -6,12 +6,12 @@ values ('John', 'Johnson', 'autopark', 33, 65000, 'JJ33', '$2a$10$Wg5ypZqTNQT3JB
 insert into roles (role) values ('ROLE_ADMIN');
 insert into roles (role) values ('ROLE_USER');
 
-insert into user_role (user_id, role_id) select user_id, role_id from users user,
+insert into users_roles (user_id, role_id) select user_id, role_id from users user,
 
                                                                       roles where user.username = 'JJ33' and roles.role = 'ROLE_USER';
-insert into user_role (user_id, role_id) select user_id, role_id from users user,
+insert into users_roles (user_id, role_id) select user_id, role_id from users user,
 
                                                                       roles where user.username = 'ivi50' and roles.role = 'ROLE_ADMIN';
-insert into user_role (user_id, role_id) select user_id, role_id from users user,
+insert into users_roles (user_id, role_id) select user_id, role_id from users user,
 
                                                                       roles where user.username = 'ivi50' and roles.role = 'ROLE_USER';

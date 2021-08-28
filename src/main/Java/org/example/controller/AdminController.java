@@ -1,57 +1,73 @@
 package org.example.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.example.model.Role;
+import org.example.service.RoleService;
 import org.example.service.UserService;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    @Autowired
     private UserService userService;
-    private  PasswordEncoder passwordEncoder;
+    private RoleService roleService;
 
-    /*@Autowired
-    public AdminController(@Lazy UserService userService, @Lazy PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    @Autowired
+    public AdminController(UserService userService, RoleService roleService) {
+
         this.userService = userService;
-    }*/
+        this.roleService = roleService;
+    }
 
     @GetMapping("/allUsers")//полный список
     public String list(Model model) {
+
         model.addAttribute("users", userService.usersList());
-        return "list";
+        model.addAttribute("newUser", new User());
+
+        return "commonPage";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
+
         model.addAttribute("user", userService.findUserById(id));
         return "edit";
     }
 
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user) {
-        userService.updateUser(user);
+    @PatchMapping("/{id}") //@Valid, после аннотации - BindingResult!
+    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, HttpServletRequest request) {
+
+        if (bindingResult.hasErrors()) {
+            return "edit";
+        }
+        String[] rolesForUpdate = request.getParameterValues("roles");// принимает данные с чекбокса (все - отмеченные и нет)
+        Set<Role> rolesSetForUpdate = roleService.rolesFromCheckbox(rolesForUpdate);
+        userService.updateUser(user, rolesSetForUpdate);
         return "redirect:/admin/allUsers";
     }
 
-    @GetMapping("/new") //форма для нового юзера
-    public String newUser(Model model) {           //@ModelAttribute
-        model.addAttribute("user", new User());
 
-        return "new";
-    }
+    @PostMapping(value="/addNew")//перенаправление на страницу всех юзеров
+    public String create(@Valid User user, BindingResult bindingResult, HttpServletRequest request, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "redirect:/admin/allUsers";
+        }
 
-    @PostMapping//перенаправление на страницу всех юзеров
-    public String create(@ModelAttribute("user") User user) {
-        userService.registerUser(user);
+        String[] rolesForUpdate = request.getParameterValues("createRoles");
+        Set<Role> rolesSetForRegister = roleService.rolesFromCheckbox(rolesForUpdate);
+        userService.registerUser(user, rolesSetForRegister);
         return "redirect:/admin/allUsers";
     }
 
@@ -60,5 +76,4 @@ public class AdminController {
         userService.deleteUser(id);
         return "redirect:/admin/allUsers";
     }
-
 }
