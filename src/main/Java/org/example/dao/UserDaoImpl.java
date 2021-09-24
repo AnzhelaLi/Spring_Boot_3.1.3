@@ -45,6 +45,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User updateUser(User updatedUser) {
+
         entityManager.merge(updatedUser);
 
         return updatedUser;
@@ -68,6 +69,7 @@ public class UserDaoImpl implements UserDao {
                     createQuery("select u from User u where u.username = :username", User.class).
                     setParameter("username", username). getSingleResult();
         } catch (NoResultException e) {
+            System.out.println("no result");
             e.printStackTrace();
             return null;
         }

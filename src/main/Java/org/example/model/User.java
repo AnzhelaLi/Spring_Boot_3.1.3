@@ -73,8 +73,9 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public User(String name, String surname, String workplace, int age, int salary, String username, String password) {
+    public User(Long id, String name, String surname, String workplace, int age, int salary, String username, String password, Set<Role> roles) {
 
+        this.id = id;
         this.name = name;
         this.surname = surname;
         this.workplace = workplace;
@@ -82,6 +83,7 @@ public class User implements UserDetails {
         this.salary = salary;
         this.username = username;
         this.password = password;
+        this.roles = roles;
 
     }
 
@@ -191,4 +193,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

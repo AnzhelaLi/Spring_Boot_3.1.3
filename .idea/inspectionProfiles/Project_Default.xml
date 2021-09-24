@@ -1,0 +1,24 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="IncorrectHttpHeaderInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="customHeaders">
+        <set>
+          <option value="{" />
+          <option value="  &quot;id&quot;" />
+          <option value="  &quot;value&quot;" />
+          <option value="}" />
+          <option value="&quot;id&quot;" />
+          <option value="  &quot;name&quot;" />
+          <option value="&quot;workplace&quot;" />
+          <option value="  &quot;surname&quot;" />
+          <option value="&quot;age&quot;" />
+          <option value="&quot;salary&quot;" />
+          <option value="&quot;editRoles&quot;" />
+          <option value="&quot;username&quot;" />
+          <option value="&quot;password&quot;" />
+        </set>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

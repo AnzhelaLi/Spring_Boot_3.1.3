@@ -12,6 +12,8 @@ public interface RoleService {
 
     Set <Role> rolesFromCheckbox(String[] listOfRolesNameFromCheckbox);
 
+    Set<Role> rolesFromSelectForm(String[] listOfRolesNameFromCheckbox);
+
     Role findRoleByRoleName(String role);
 
     List<Role> allRoles();
