@@ -21,6 +21,7 @@ public class RoleServiceImpl implements RoleService {
         this.roleDao = roleDao;
     }
 
+    @Transactional
     @Override
     public Role saveRole(Role role) {
         return roleDao.saveRole(role);

@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -35,12 +36,15 @@ public class AdminController {
     @GetMapping("/allUsers")//полный список
     public String list(Model model, @AuthenticationPrincipal UserDetails detailUser) {
 
+
         User currentUser = (User)userService.loadUserByUsername(detailUser.getUsername());
+
 
         model.addAttribute("users", userService.usersList());
         model.addAttribute("newUser", new User());
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("allRoles", roleService.allRoles());
+
 
         return "commonPage";
     }
@@ -53,10 +57,8 @@ public class AdminController {
     }*/
 
 
-    //https://stackoverflow.com/questions/50464802/how-can-i-populate-value-at-form-inside-modal-using-bootstrap-and-thymeleaf
-    @PatchMapping ("/edit") //@Valid, после аннотации - BindingResult!
-    public String update(@ModelAttribute("user") User user, @RequestParam(value ="editRoles") String[] rolesForUpdate )  {
-
+    @PostMapping ("/edit")
+    public String update( @ModelAttribute("userForEdit") User user, @RequestParam(value ="editRoles") String[] rolesForUpdate )  {
 
             //String[] rolesForUpdate = request.getParameterValues("editRoles");// принимает данные с чекбокса (все - отмеченные и нет)
             Set<Role> rolesSetForUpdate = roleService.rolesFromCheckbox(rolesForUpdate);

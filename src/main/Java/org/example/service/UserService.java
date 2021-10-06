@@ -2,7 +2,6 @@ package org.example.service;
 
 import org.example.model.Role;
 import org.example.model.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.util.List;

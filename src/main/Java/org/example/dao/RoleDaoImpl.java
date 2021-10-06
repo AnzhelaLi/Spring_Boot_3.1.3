@@ -42,6 +42,7 @@ public class RoleDaoImpl implements RoleDao {
         }
     }
 
+
     @Override
     public List<Role> findRoleByUsername(String username) {
         try {
@@ -53,6 +54,7 @@ public class RoleDaoImpl implements RoleDao {
             return null;
         }
     }
+
 
     @Override
     public List<Role> allRoles() {
