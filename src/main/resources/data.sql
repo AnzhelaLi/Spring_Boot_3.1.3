@@ -7,7 +7,7 @@ insert into roles (role) values ('ROLE_ADMIN');
 insert into roles (role) values ('ROLE_USER');
 
 insert into users_roles (user_id, role_id) select user_id, role_id from users user,
-                                                                      roles where user.username = 'JJ33' and roles.role = 'ROLE_ADMIN';
+                                                                      roles where user.username = 'JJ33' and roles.role = 'ROLE_USER';
 insert into users_roles (user_id, role_id) select user_id, role_id from users user,
                                                                       roles where user.username = 'ivi50' and roles.role = 'ROLE_ADMIN';
 insert into users_roles (user_id, role_id) select user_id, role_id from users user,

@@ -29,13 +29,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private UserDetailsService userDetailsService;// сервис, с помощью которого тащим пользователя
-    private SuccessUserHandler successUserHandler;// класс, в котором описана логика перенаправления пользователей по ролям
+
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public SecurityConfig(@Lazy@Qualifier("userServiceImpl") UserDetailsService userDetailsService,
-                          SuccessUserHandler successUserHandler) {
+    public SecurityConfig(@Lazy@Qualifier("userServiceImpl") UserDetailsService userDetailsService) {
+
         this.userDetailsService = userDetailsService;
-        this.successUserHandler = successUserHandler;
     }
 
     @Autowired
@@ -45,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests(); //- попробуйте выяснить сами, что это даёт
+        http.csrf().disable().authorizeRequests();
 
         http.formLogin()
                 .successHandler(new SuccessUserHandler())
@@ -60,11 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/admin/**").access("hasAnyRole('ADMIN', 'USER')")
-               // .antMatchers("/user/**").access("hasAnyRole('USER', 'ADMIN')")
                 .anyRequest().authenticated();
 
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
