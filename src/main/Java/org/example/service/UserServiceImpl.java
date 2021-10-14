@@ -5,11 +5,13 @@ import org.example.dao.UserDao;
 import org.example.model.Role;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +24,17 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private UserDao userDao;
-    private RoleDao roleDao;
+    private final UserDao userDao;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, RoleDao roleDao, PasswordEncoder passwordEncoder) {
-
-        this.passwordEncoder = passwordEncoder;
+    public UserServiceImpl(UserDao userDao) {
         this.userDao = userDao;
-        this.roleDao = roleDao;
     }
 
-    public UserServiceImpl() {
-
+    @Autowired
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -48,10 +47,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User registerUser(User user, Set<Role> rolesFromCheckbox) { //метод для сохранения новых юзеров
         User userFromDb = userDao.getUserByName(user.getUsername());
-        //Role role = roleDao.findRoleByRoleName("ROLE_USER");
 
         if (userFromDb == null) {
-            // user.setRoles(new HashSet<>(Arrays.asList(role)));
             user.setRoles(rolesFromCheckbox);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userDao.justSaveUser(user);
@@ -75,13 +72,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User updateUser(User user, Set<Role> roles) { //метод для редактирования user-данных
 
-        //user.setRoles(new HashSet<>(Arrays.asList(roleDao.findByRole("ROLE_USER"))));
         user.setRoles(roles); //роли должны быть после merge(updateRole)
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userDao.updateUser(user);
     }
 
-    @Transactional(/*readOnly = true*/)
+    @Transactional
     @Override
     public List<User> usersList() {
         return userDao.usersList();
@@ -105,5 +101,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getRole()));
         }
         return user;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

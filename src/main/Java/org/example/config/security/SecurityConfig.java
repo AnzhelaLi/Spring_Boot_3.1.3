@@ -1,18 +1,13 @@
 package org.example.config.security;
 
 import org.example.config.handler.SuccessUserHandler;
-import org.example.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -21,19 +16,13 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserServiceImpl userServiceImpl;
+    private final UserDetailsService userDetailsService;// сервис, с помощью которого тащим пользователя
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserDetailsService userDetailsService() {
-        return userServiceImpl;
-    }
+    public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder ) {
 
-    private UserDetailsService userDetailsService;// сервис, с помощью которого тащим пользователя
-
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public SecurityConfig(@Lazy@Qualifier("userServiceImpl") UserDetailsService userDetailsService) {
-
+        this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
     }
 
@@ -61,10 +50,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").access("hasAnyRole('ADMIN', 'USER')")
                 .anyRequest().authenticated();
 
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
