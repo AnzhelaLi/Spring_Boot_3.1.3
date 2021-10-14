@@ -1,6 +1,5 @@
 package org.example.service;
 
-import org.example.dao.RoleDao;
 import org.example.dao.UserDao;
 import org.example.model.Role;
 import org.example.model.User;
@@ -39,8 +38,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Transactional
     @Override
-    public User justSaveUser(User user) {  //метод для addInitData(), который заполняет базу данных при
-        return userDao.justSaveUser(user); //для метода Init - при старте приложения
+    public User justSaveUser(User user) {
+        return userDao.justSaveUser(user);
     }
 
     @Transactional
