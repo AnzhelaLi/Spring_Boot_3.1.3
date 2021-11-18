@@ -7,49 +7,35 @@ import org.example.service.RoleService;
 import org.example.model.User;
 import org.example.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.List;
 import java.util.Set;
 
-
-@Controller
+@RestController
 @RequestMapping("/admin")
-public class AdminController {
+public class SimpleRestController {
 
     private UserServiceImpl userService;
     private RoleService roleService;
 
     @Autowired
-    public AdminController(UserServiceImpl userService, RoleService roleService) {
+    public SimpleRestController(UserServiceImpl userService, RoleService roleService) {
 
         this.userService = userService;
         this.roleService = roleService;
     }
 
-    @GetMapping("/allUsers")
-    public String list(Model model, @AuthenticationPrincipal UserDetails detailUser) {
+    @GetMapping(value= "/allUsers",  produces = "application/json")
+    public ResponseEntity<List<User>> list() {
+        List<User> allUsersList = userService.usersList();
 
-        User currentUser = (User) userService.loadUserByUsername(detailUser.getUsername());
-
-        model.addAttribute("users", userService.usersList());
-        model.addAttribute("newUser", new User());
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("allRoles", roleService.allRoles());
-
-        if ((currentUser.getRoles().size()==1) & currentUser.getRoles().stream().findFirst().get()
-                .getRole().contains("ROLE_USER")) {
-            model.addAttribute("roleOfCurrentUser", "ROLE_USER");
-        } else {
-            model.addAttribute("roleOfCurrentUser", "notUser");
-        }
-        return "commonPage";
+        return ResponseEntity.ok(allUsersList);
     }
 
-    @PostMapping ("/edit")
+    @PostMapping("/edit")
     public String update( @ModelAttribute("userForEdit") User user, @RequestParam(value ="editRoles") String[] rolesForUpdate )  {
 
             Set<Role> rolesSetForUpdate = roleService.rolesFromCheckbox(rolesForUpdate);

@@ -1,3 +1,7 @@
+drop table if exists users_roles;
+drop table if exists users;
+drop table if exists roles;
+
 create table users (user_id bigint not null auto_increment, name varchar(30) not null,
 
                     surname varchar(30) not null, workplace varchar(30) not null, age int(10) not null,

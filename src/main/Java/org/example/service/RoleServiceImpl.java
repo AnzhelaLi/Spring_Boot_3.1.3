@@ -46,7 +46,7 @@ public class RoleServiceImpl implements RoleService {
         return rolesForUpdate;
     }
 
-    @Transactional
+    @Transactional 
     @Override
     public Set<Role> rolesFromSelectForm(String[] listOfRolesNameFromCheckbox) {
         Set<Role> rolesForUpdate = new HashSet<>();

@@ -7,9 +7,9 @@ import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConf
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EntityScan(basePackages = {"org.example.model"})
-public class SpringBootSecurity3_1_2_Application {
+//@EntityScan(basePackages = {"org.example.model"})
+public class SpringBootSecurity3_1_3_Application {
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootSecurity3_1_2_Application.class, args);
+        SpringApplication.run(SpringBootSecurity3_1_3_Application.class, args);
     }
 }

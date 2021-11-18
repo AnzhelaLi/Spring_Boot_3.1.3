@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+
         this.passwordEncoder = passwordEncoder;
     }
 
