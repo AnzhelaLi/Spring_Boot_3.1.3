@@ -33,7 +33,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests();
+        http.csrf().disable();
+
+        /*http.httpBasic().and().authorizeRequests()
+                .antMatchers("/rest/**")
+                .permitAll().and().csrf().disable();*/  //for POSTMAN
 
         http.formLogin()
                 .successHandler(new SuccessUserHandler())
@@ -42,13 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout()
                 .permitAll()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login")
-                .and().csrf().disable();
+                .logoutSuccessUrl("/login").and().csrf().disable();
 
         http
                 .authorizeRequests()
                 .antMatchers("/admin/**").access("hasAnyRole('ADMIN', 'USER')")
-                .anyRequest().authenticated();
-
+                .anyRequest().authenticated().and().csrf().disable();
     }
 }

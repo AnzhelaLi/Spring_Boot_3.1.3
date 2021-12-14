@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+  <title sec:authorize="hasRole('ROLE_ADMIN')">Admin panel</title>
+  <title sec:authorize="hasRole('ROLE_USER')">User page</title>
+</head>
+<body>
+<div class="row">
+  <div class="col-12">
+    <div class="p-3 mb-2 bg-dark text-white">
+      <p sec:authentication="name" style="display: inline">Username</p>
+      <p style="display: inline">with role:</p>
+      <p th:each="role : ${currentUser.roles}"
+         th:text="${role.role.toString().replaceFirst('ROLE_', '').replaceAll(',', ' ')}" style="display: inline">
+        roles</p>
+      <a th:href="@{/logout}" style='float: right; color: darkgray'>Logout</a>
+    </div>
+  </div>
+</div>
+<div class="d-flex align-items-start">
+  <div class="nav flex-column nav-pills me-3 col-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+    <button class="nav-link active text-start" id="v-pills-home-tab" data-bs-toggle="pill"
+            data-bs-target="#v-pills-home"
+            type="button" role="tab" aria-controls="v-pills-home" aria-selected="true"
+            sec:authorize="hasRole('ROLE_ADMIN')">Admin
+    </button>
+    <button class="nav-link text-start" id="v-pills-profile-tab" data-bs-toggle="pill"
+            data-bs-target="#v-pills-profile"
+            type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false"
+            sec:authorize="hasRole('ROLE_ADMIN')">User
+    </button>
+    <button th:if="${roleOfCurrentUser == 'ROLE_USER'}" class="nav-link active text-start" id="v-pills-messages-tab"
+            data-bs-toggle="pill" data-bs-target="#v-pills-messages"
+            type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">User
+    </button>
+  </div>
+  <div class="tab-content col-md-10" id="v-pills-tabContent">
+    <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"
+         sec:authorize="hasRole('ROLE_ADMIN')">
+      <div class="container-fluid bg-light text-dark min-vh-100">
+        <h1>Admin panel</h1>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav- item" role="presentation">
+            <button class="nav-link active" id="UsersTable-tab" data-bs-toggle="tab"
+                    data-bs-target="#UsersTable" type="button" role="tab" aria-controls="UsersTable"
+                    aria-selected="true">Users table
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="NewUser-tab" data-bs-toggle="tab" data-bs-target="#NewUser"
+                    type="button" role="tab" aria-controls="NewUser" aria-selected="false">New User
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" data-toggle="tab" id="UsersTable" role="tabpanel"
+               aria-labelledby="UsersTable-tab">
+            <div class="container"
+                 style="border-right: 1px solid lightgrey; border-left: 1px solid lightgrey;">
+              <div class="row">
+                <h5>All users</h5>
+              </div>
+            </div>
+            <div class="container" style="border: 1px solid lightgrey;"><br>
+              <table class="table table-striped"  id="listOfUsers" style="border-top: 1px solid lightgrey">
+                <thead>
+                <tr>
+                  <th style="border-color: lightgrey;" scope="col">Id</th>
+                  <th style="border-color: lightgrey;" scope="col">First Name</th>
+                  <th style="border-color: lightgrey;" scope="col">Last Name</th>
+                  <th style="border-color: lightgrey;" scope="col">Workplace</th>
+                  <th style="border-color: lightgrey;" scope="col">Age</th>
+                  <th style="border-color: lightgrey;" scope="col">Salary</th>
+                  <th style="border-color: lightgrey;" scope="col">Username</th>
+                  <th style="border-color: lightgrey;" scope="col">Role</th>
+                  <th style="border-color: lightgrey;" scope="col">Edit</th>
+                  <th style="border-color: lightgrey;" scope="col">Delete</th>
+                </tr>
+                </thead>
+                <tbody id="userTable">
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal fade" tabindex="-1" id="deleteModalPopup"
+               aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deleteModalLabel">Delete user</h5>
+                  <button type="button" class="btn-close"
+                          data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="deleteModalBody">
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" data-toggle="tab" id="NewUser" role="tabpanel"
+               aria-labelledby="NewUser-tab">
+            <form  method="POST" id="addNewUserForm">
+              <div class="container"
+                   style="border-right: 1px solid lightgrey; border-left: 1px solid lightgrey;">
+                <div class="row"><h5>Add new user</h5>
+                </div>
+              </div>
+              <div class="container" style="border: 1px solid lightgrey;">
+                <div class="row justify-content-center">
+                  <div class="col-4">
+                    <div style="text-align: center;">
+                      <label for="nameNew" class="form-label mb-3">First Name</label>
+                      <input type="text" class="form-control" id="nameNew" name="name" value="">
+                      <div class="mb-3">
+                        <label for="surnameNew" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="surnameNew" name="surname"
+                               value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="workplaceNew" class="form-label">Workplace</label>
+                        <input type="text" class="form-control" id="workplaceNew"
+                               name="workplace" value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="ageNew" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="ageNew" name="age"
+                               value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="salaryNew" class="form-label">Salary</label>
+                        <input type="number" class="form-control" id="salaryNew" name="salary"
+                               value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="usernameNew" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="usernameNew" name="username"
+                               value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="passwordNew" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="passwordNew"
+                               name="password" value="">
+                      </div>
+                      <div class="mb-3">
+                        <label for="createRoles">Role </label>
+                        <select name="createRoles" class="form-control" size="2" multiple
+                                aria-label="multiple select example" id="createRoles"
+                                aria-multiselectable="true">
+                          <option id="1" value="ROLE_ADMIN">ADMIN</option>
+                          <option id="2" value="ROLE_USER">USER</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" form="addNewUserForm">Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+      <div class="container-fluid  bg-light text-dark min-vh-100">
+        <h1>User information-page</h1>
+        <div class="container" style="border-right: 1px solid lightgrey; border-left: 1px solid lightgrey;">
+          <div class="row">
+            <h5>About users</h5></div>
+        </div>
+        <div class="container" style="border: 1px solid lightgrey;"><br>
+          <table class="table table-striped" style="border-top: 1px solid lightgrey">
+            <thead>
+            <tr>
+              <th style="border-color: lightgray;" scope="col">Id</th>
+              <th style="border-color: lightgray;" scope="col">First Name</th>
+              <th style="border-color: lightgray;" scope="col">Last Name</th>
+              <th style="border-color: lightgray;" scope="col">Workplace</th>
+              <th style="border-color: lightgray;" scope="col">Age</th>
+              <th style="border-color: lightgray;" scope="col">Salary</th>
+              <th style="border-color: lightgray;" scope="col">Username</th>
+              <th style="border-color: lightgray;" scope="col">Role</th>
+            </tr>
+            </thead>
+            <tr>
+              <td th:utext="${currentUser.getId()}">Id</td>
+              <td th:utext="${currentUser.getName()}">First_name</td>
+              <td th:utext="${currentUser.getSurname()}">Last_name</td>
+              <td th:utext="${currentUser.getWorkplace()}">Workplace</td>
+              <td th:utext="${currentUser.getAge()}">Age</td>
+              <td th:utext="${currentUser.getSalary()}">Salary</td>
+              <td th:utext="${currentUser.getUsername()}">Username</td>
+              <td>
+                <p style="display: inline" th:each="role : ${currentUser.getRoles()}"
+                   th:text="${role.getRole().toString().replaceFirst('ROLE_', '').replaceAll(',', '')}">
+                  Roles</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div th:if="${roleOfCurrentUser == 'ROLE_USER'}" class="tab-pane fade show active" id="v-pills-messages"
+         role="tabpanel" aria-labelledby="v-pills-messages-tab">
+      <div class="container-fluid  bg-light text-dark min-vh-100">
+        <h1>User information-page</h1>
+        <div class="container" style="border-right: 1px solid lightgrey; border-left: 1px solid lightgrey;">
+          <div class="row">
+            <h5>About users</h5></div>
+        </div>
+        <div class="container" style="border: 1px solid lightgrey;"><br>
+          <table class="table table-striped" style="border-top: 1px solid lightgrey">
+            <thead>
+            <tr>
+              <th style="border-color: lightgray;" scope="col">Id</th>
+              <th style="border-color: lightgray;" scope="col">First Name</th>
+              <th style="border-color: lightgray;" scope="col">Last Name</th>
+              <th style="border-color: lightgray;" scope="col">Workplace</th>
+              <th style="border-color: lightgray;" scope="col">Age</th>
+              <th style="border-color: lightgray;" scope="col">Salary</th>
+              <th style="border-color: lightgray;" scope="col">Username</th>
+              <th style="border-color: lightgray;" scope="col">Role</th>
+            </tr>
+            </thead>
+            <tr>
+              <td th:utext="${currentUser.getId()}">Id</td>
+              <td th:utext="${currentUser.getName()}">First_name</td>
+              <td th:utext="${currentUser.getSurname()}">Last_name</td>
+              <td th:utext="${currentUser.getWorkplace()}">Workplace</td>
+              <td th:utext="${currentUser.getAge()}">Age</td>
+              <td th:utext="${currentUser.getSalary()}">Salary</td>
+              <td th:utext="${currentUser.getUsername()}">Username</td>
+              <td>
+                <p style="display: inline" th:each="role : ${currentUser.getRoles()}"
+                   th:text="${role.getRole().toString().replaceFirst('ROLE_', '').replaceAll(',', '')}">
+                  Roles</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+<script type="text/javascript" src = "../js/file.js">
+</script>
+</body>
+</html>

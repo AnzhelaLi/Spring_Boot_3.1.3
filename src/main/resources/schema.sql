@@ -6,7 +6,7 @@ create table users (user_id bigint not null auto_increment, name varchar(30) not
 
                     surname varchar(30) not null, workplace varchar(30) not null, age int(10) not null,
 
-                    salary int (100) not null, username varchar(40) not null,
+                    salary int (100) not null, username varchar(70) not null,
                     password varchar(200) not null,
                     primary key(user_id), unique(username));
 

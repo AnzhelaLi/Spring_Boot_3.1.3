@@ -5,6 +5,7 @@ import org.example.model.Role;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,6 +53,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setRoles(rolesFromCheckbox);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userDao.justSaveUser(user);
+
         } else {
             try {
                 throw new Exception("User already exists");
@@ -68,13 +70,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userDao.deleteUser(id);
     }
 
+
     @Transactional
     @Override
     public User updateUser(User user, Set<Role> roles) { //метод для редактирования user-данных
 
         user.setRoles(roles); //роли должны быть после merge(updateRole)
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userDao.updateUser(user);
+        User afterUpdateUser = new User();
+        try {
+            afterUpdateUser = userDao.updateUser(user);
+        } catch (DataIntegrityViolationException e) {
+            e.printStackTrace();
+        }
+        return afterUpdateUser;
     }
 
     @Transactional

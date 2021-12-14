@@ -1,61 +1,52 @@
 package org.example.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.example.model.Role;
-import org.example.service.RoleService;
 import org.example.model.User;
 import org.example.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-
 import java.util.List;
-import java.util.Set;
+
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/rest")
 public class SimpleRestController {
 
     private UserServiceImpl userService;
-    private RoleService roleService;
 
     @Autowired
-    public SimpleRestController(UserServiceImpl userService, RoleService roleService) {
+    public SimpleRestController(UserServiceImpl userService) {
 
         this.userService = userService;
-        this.roleService = roleService;
     }
 
-    @GetMapping(value= "/allUsers",  produces = "application/json")
+    @GetMapping("/allUsers")
     public ResponseEntity<List<User>> list() {
-        List<User> allUsersList = userService.usersList();
-
-        return ResponseEntity.ok(allUsersList);
+        return new ResponseEntity<>(userService.usersList(), HttpStatus.OK);
     }
 
-    @PostMapping("/edit")
-    public String update( @ModelAttribute("userForEdit") User user, @RequestParam(value ="editRoles") String[] rolesForUpdate )  {
-
-            Set<Role> rolesSetForUpdate = roleService.rolesFromCheckbox(rolesForUpdate);
-            userService.updateUser(user, rolesSetForUpdate);
-            return "redirect:/admin/allUsers";
-
+    @GetMapping("/getAuthorizedUser")
+    public ResponseEntity<User> getAuthorizedUser(@AuthenticationPrincipal UserDetails detailUser){
+        User currentUser = (User) userService.loadUserByUsername(detailUser.getUsername());
+        return new ResponseEntity<>(userService.findUserById(currentUser.getId()), HttpStatus.OK);
     }
+
+    @PutMapping(value ="/edit" )
+    public ResponseEntity<User> update(@RequestBody User updatedUser) {
+            return new ResponseEntity<>(userService.updateUser(updatedUser, updatedUser.getRoles()), HttpStatus.OK);
+  }
 
     @PostMapping(value="/addNew")
-    public String create(@ModelAttribute("newUser") User user, HttpServletRequest request) {
-
-        String[] rolesForRegister = request.getParameterValues("createRoles");
-        Set<Role> rolesSetForRegister = roleService.rolesFromSelectForm(rolesForRegister);
-        userService.registerUser(user, rolesSetForRegister);
-        return "redirect:/admin/allUsers";
+    public ResponseEntity<User> create(@RequestBody User newUser) {
+        return new ResponseEntity<>(userService.registerUser(newUser, newUser.getRoles()), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    @DeleteMapping("/deleteUser/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin/allUsers";
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
